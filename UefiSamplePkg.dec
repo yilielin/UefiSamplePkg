@@ -1,0 +1,56 @@
+## @file  UefiSamplePkg.dec
+#
+##
+
+
+[Defines]
+  DEC_SPECIFICATION              = 0x00010005
+  PACKAGE_NAME                   = UefiSamplePkg
+  PACKAGE_UNI_FILE               = UefiSamplePkg.uni
+  PACKAGE_GUID                   = 745dd2c7-ff16-4899-ba6f-831f56e3150b
+  PACKAGE_VERSION                = 1.00
+
+[Includes]
+  Include
+
+
+[Includes.Common.Private]
+  
+
+[LibraryClasses]
+  
+
+[Guids]
+  
+
+[Ppis]
+ 
+
+[Protocols]
+  
+
+[PcdsFeatureFlag]
+
+[PcdsFixedAtBuild]
+
+
+[PcdsFixedAtBuild, PcdsPatchableInModule]
+
+
+[PcdsPatchableInModule, PcdsDynamic, PcdsDynamicEx]
+
+
+[PcdsFixedAtBuild, PcdsPatchableInModule, PcdsDynamic, PcdsDynamicEx]
+
+ 
+[PcdsPatchableInModule]
+
+
+[PcdsDynamic, PcdsDynamicEx]
+
+
+[PcdsDynamicEx]
+
+
+[UserExtensions.TianoCore."ExtraFiles"]
+  UefiSamplePkgExtra.uni
