@@ -45,6 +45,6 @@ ShellAppMain (
       Print (L"\n");
   } 
 
-  return 0;
+  return RETURN_SUCCESS;
 } //ShellAppMain
 
