@@ -34,9 +34,9 @@ ShellAppMain (
   IN CHAR16  **Argv
   )
 {
-  // Display Hunter if no arg is passed
+  // Display my name if no arg is passed
   if (Argc <= 1 ) {
-      Print (L"Hunter\n");
+      Print (L"yilie\n");
   } else {
       // echo args
       for (int idx=1 ; idx < Argc ; idx++) {
