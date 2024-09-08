@@ -84,7 +84,6 @@
   DxeCoreEntryPoint|MdePkg/Library/DxeCoreEntryPoint/DxeCoreEntryPoint.inf
   MemoryAllocationLib|MdePkg/Library/UefiMemoryAllocationLib/UefiMemoryAllocationLib.inf
   ReportStatusCodeLib|MdeModulePkg/Library/DxeReportStatusCodeLib/DxeReportStatusCodeLib.inf
-  DebugLib|MdePkg/Library/BaseDebugLibSerialPort/BaseDebugLibSerialPort.inf
   UefiScsiLib|MdePkg/Library/UefiScsiLib/UefiScsiLib.inf
 
   [LibraryClasses.common.UEFI_APPLICATION]
@@ -92,7 +91,11 @@
   HobLib|MdePkg/Library/DxeHobLib/DxeHobLib.inf
   MemoryAllocationLib|MdePkg/Library/UefiMemoryAllocationLib/UefiMemoryAllocationLib.inf
   ReportStatusCodeLib|MdeModulePkg/Library/DxeReportStatusCodeLib/DxeReportStatusCodeLib.inf
-  DebugLib|MdePkg/Library/BaseDebugLibSerialPort/BaseDebugLibSerialPort.inf
+  !if $(TARGET) == RELEASE
+    DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
+  !else
+    DebugLib|MdePkg/Library/UefiDebugLibConOut/UefiDebugLibConOut.inf
+  !endif
   ShellLib|ShellPkg/Library/UefiShellLib/UefiShellLib.inf
   
 
@@ -102,6 +105,8 @@
 
 
 [PcdsFixedAtBuild]
+  gEfiMdePkgTokenSpaceGuid.PcdDebugPropertyMask|0x1f
+  gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel|0x80400040  # error and verbose
 
 
 [PcdsDynamicExDefault]

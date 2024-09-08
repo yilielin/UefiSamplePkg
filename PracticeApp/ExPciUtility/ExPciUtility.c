@@ -8,16 +8,31 @@
 **/
 
 #include <Uefi.h>
+#include <IndustryStandard/Pci.h>
+
 #include <Library/PcdLib.h>
 #include <Library/UefiLib.h>
 #include <Library/UefiApplicationEntryPoint.h>
 #include <Library/ShellCEntryLib.h>              // ShellAppMain()
-// #include <Library/PciLib.h>
-// #include <Library/PciCf8Lib.h>
 #include <Library/UefiBootServicesTableLib.h>
+#include <Library/DebugLib.h>
 #include <Protocol/PciRootBridgeIo.h>
 #include <Protocol/PciIo.h>
-#include <IndustryStandard/Pci.h>
+
+VOID
+EFIAPI
+PrintAllPciDevices (
+  VOID
+);
+
+EFI_STATUS
+PciReadType00 (
+  IN  EFI_PCI_ROOT_BRIDGE_IO_PROTOCOL     *PciRootBridgeIo,
+  OUT PCI_TYPE00                          *PciType00,
+  IN  UINT8                               Bus,
+  IN  UINT8                               Dev,
+  IN  UINT8                               Fun
+  );
 
 //
 // String token ID of help message text.
@@ -30,8 +45,12 @@
 GLOBAL_REMOVE_IF_UNREFERENCED EFI_STRING_ID  mStringHelpTokenId = STRING_TOKEN (STR_HW_HELP_INFORMATION);
 
 
+  EFI_PCI_ROOT_BRIDGE_IO_PROTOCOL  *mPciRootBridgeIo = NULL;
+  EFI_HANDLE  *mPciRBHandleBuffer = NULL;
+  UINTN       mPciRBHandleCount = 0;
+
 /**
-  Entry point function of this shell application.
+  Entry point function from ShellCEntryLib.
 **/
 INTN
 EFIAPI
@@ -40,38 +59,96 @@ ShellAppMain (
   IN CHAR16  **Argv
   )
 {
-  EFI_PCI_ROOT_BRIDGE_IO_PROTOCOL  *mPciRootBridgeIo = NULL;
-  PCI_TYPE00                       Pci;
-  EFI_STATUS                       Status = EFI_NOT_STARTED;
-  INTN                             RetVal = RETURN_NOT_STARTED;
+  DEBUG ((DEBUG_INFO, "ExPciUtility start\n"));
+  EFI_STATUS  Status = EFI_NOT_STARTED;
+  INTN        RetVal = RETURN_NOT_STARTED;
 
-  Status = gBS->LocateProtocol (&gEfiPciRootBridgeIoProtocolGuid, NULL, (VOID **)&mPciRootBridgeIo);
+  Status = gBS->LocateHandleBuffer (
+                  ByProtocol, 
+                  &gEfiPciRootBridgeIoProtocolGuid,
+                  NULL,
+                  &mPciRBHandleCount,
+                  &mPciRBHandleBuffer
+                  );
+
   if (EFI_ERROR (Status)) {
-    Print (L"PCI root bridge not found\n");
+    Print (L"PCI root bridge is not found\n");
     Status = EFI_NOT_FOUND;
+    return RETURN_ABORTED;
+  }
+  
+
+  // Display PCI devices if no args passed
+  if (Argc <= 1) {
+      PrintAllPciDevices ();
+      RetVal = RETURN_SUCCESS;
+  } // if
+
+  // Print PCI configure space
+  if (Argc <= 4) {
+    // TODO
   }
 
-  if (Status != EFI_SUCCESS) {
-    RetVal = RETURN_ABORTED;
-  } else {
-    RetVal = RETURN_SUCCESS;
-    // Display PCI devices if no args passed
-    if (Argc <= 1 ) {
-        // TODO
-    }
-    // Print PCI configure space
-    if (Argc <= 4 ) {
-      mPciRootBridgeIo->Pci.Read(
-                        mPciRootBridgeIo,
-                        EfiPciIoWidthUint32,
-                        PCI_BAR_IDX0,
-                        sizeof (Pci) / sizeof (UINT32),
-                        &Pci
-                        );
-      Print (L"VID: %X DID: %X\n",Pci.Hdr.VendorId, Pci.Hdr.DeviceId);
-    }
-  }
-
+  DEBUG ((DEBUG_INFO, "ExPciUtility end\n"));
   return RetVal;
 } //ShellAppMain
+
+
+VOID
+EFIAPI
+PrintAllPciDevices (
+  VOID
+  )
+{
+  EFI_STATUS  Status = EFI_NOT_STARTED;
+  PCI_TYPE00  PciType00;
+
+  // Locate all EFI_PCI_ROOT_BRIDGE_IO_PROTOCOL
+  for( UINTN Idx = 0; Idx < mPciRBHandleCount; Idx++) {
+    DEBUG ((DEBUG_INFO, "mPciRBHandleBuffer[%d]\n", Idx));
+    Status = gBS->HandleProtocol (
+                    mPciRBHandleBuffer[Idx],
+                    &gEfiPciRootBridgeIoProtocolGuid,
+                    (VOID**)&mPciRootBridgeIo
+                    );
+
+    if (!EFI_ERROR (Status)) {
+      for(UINT8 Bus=0; Bus < PCI_MAX_BUS; Bus++) {
+        for(UINT8 Dev=0; Dev <= PCI_MAX_DEVICE; Dev++) {
+          for(UINT8 Fun=0; Fun <= PCI_MAX_FUNC; Fun++) {
+            if (PciReadType00 (mPciRootBridgeIo, &PciType00, Bus, Dev, Fun) == EFI_SUCCESS) {
+              Print (L"B:%3x  D:%2x  F:%1x  |  VID:%4x  DID:%4x\n", Bus, Dev, Fun, PciType00.Hdr.VendorId, PciType00.Hdr.DeviceId);
+            }
+          } // Fun
+        } // Dev
+      } // Bus
+    } // if
+  } // for
+} // PrintAllPciDevices
+
+
+EFI_STATUS
+PciReadType00 (
+  IN  EFI_PCI_ROOT_BRIDGE_IO_PROTOCOL     *PciRootBridgeIo,
+  OUT PCI_TYPE00                          *PciType00,
+  IN  UINT8                               Bus,
+  IN  UINT8                               Dev,
+  IN  UINT8                               Fun
+  )
+{
+  PciRootBridgeIo->Pci.Read (
+                     PciRootBridgeIo,
+                     EfiPciWidthUint32,
+                     EFI_PCI_ADDRESS (Bus, Dev, Fun, 0),
+                     1,
+                     PciType00
+                     );
+  // 0xFFFF is invalid to VID
+  if (PciType00->Hdr.VendorId != 0xFFFF) {
+    return EFI_SUCCESS;
+  } else {
+    return EFI_ABORTED;
+  }
+}
+
 
