@@ -116,6 +116,7 @@
 [Components.X64]
   PracticeApp\ExShellCEntryLib\ExShellCEntryLib.inf
   PracticeApp\ExPciUtility\ExPciUtility.inf
+  PracticeApp\ExRtc\ExRtc.inf
 
 [BuildOptions]
 
