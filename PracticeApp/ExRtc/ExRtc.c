@@ -72,7 +72,7 @@ UefiMain (
     RtcBank0.Raw.Data[offset] = IoRead8 (RTC_BANK0_IO_TARG_PORT);
   }
   // Print data to screen
-  PrintCmosRtc(&RtcBank0);
+  PrintCmosRtc (&RtcBank0);
   return EFI_SUCCESS;
 }
 
@@ -81,8 +81,8 @@ PrintCmosRtc (
   IN RTC_CMOS_BANK0 *RtcBank0
   )
 {
-  Print(L"RTC (Standard) RAM Bank : \n");
-  Print(L"Sec:%02x Min:%02x Hour:%02x \nWD:%02x DoM:%02x Mon:%02x Year:%02x \n",\
+  Print (L"RTC (Standard) RAM Bank : \n");
+  Print (L"Sec:%02x Min:%02x Hour:%02x \nWD:%02x DoM:%02x Mon:%02x Year:%02x \n",\
         RtcBank0->Rtc.Sec,\
         RtcBank0->Rtc.Min,\
         RtcBank0->Rtc.Hour,\
@@ -91,12 +91,12 @@ PrintCmosRtc (
         RtcBank0->Rtc.Month,\
         RtcBank0->Rtc.Year\
         );
-  Print(L"\n");
-  Print(L"RegA:%02x \nRegB:%02x \nRegC:%02x \nRegD:%02x\n",\
+  Print (L"\n");
+  Print (L"RegA:%02x \nRegB:%02x \nRegC:%02x \nRegD:%02x\n",\
         RtcBank0->Rtc.RegA,\
         RtcBank0->Rtc.RegB,\
         RtcBank0->Rtc.RegC,\
         RtcBank0->Rtc.RegD\
         );
-  Print(L"\n"); 
+  Print (L"\n"); 
 }
