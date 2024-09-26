@@ -39,7 +39,7 @@ ShellAppMain (
       Print (L"yilie\n");
   } else {
       // echo args
-      for (int idx=1 ; idx < Argc ; idx++) {
+      for (UINTN idx=1 ; idx < Argc ; idx++) {
         Print (L"%s ",Argv[idx]);
       }
       Print (L"\n");
