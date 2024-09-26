@@ -16,7 +16,7 @@
   PLATFORM_VERSION               = 1.00
   DSC_SPECIFICATION              = 0x00010005
   OUTPUT_DIRECTORY               = Build/UefiSample
-  SUPPORTED_ARCHITECTURES        = X64
+  SUPPORTED_ARCHITECTURES        = IA32|X64
   BUILD_TARGETS                  = DEBUG|RELEASE|NOOPT
   SKUID_IDENTIFIER               = DEFAULT
 
@@ -110,12 +110,12 @@
 
 [PcdsDynamicExDefault]
 
-[Components]
-
-[Components.X64]
+[Components.common]
   PracticeApp\ExShellCEntryLib\ExShellCEntryLib.inf
   PracticeApp\ExPciUtility\ExPciUtility.inf
   PracticeApp\ExRtc\ExRtc.inf
+[Components.X64]
+
 
 [BuildOptions]
 
