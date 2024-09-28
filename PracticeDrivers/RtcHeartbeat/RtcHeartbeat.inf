@@ -1,0 +1,47 @@
+## @file
+#  Sample UEFI Application Reference EDKII Module.
+#
+#
+#  It demos how to use EDKII PCD mechanism to make code more flexible.
+#
+#  Copyright (c) 2008 - 2018, Intel Corporation. All rights reserved.<BR>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = RtcHeartbeat
+  FILE_GUID                      = c9f1c6bb-b388-47a2-9ec8-c6f73593e0a3
+  MODULE_TYPE                    = BASE
+  VERSION_STRING                 = 1.0
+  # TODO CONSTRUCTOR DESTRUCTOR
+  CONSTRUCTOR                    = CreateRtcHeartbeat
+
+#
+# The following information is for reference only and not required by the build tools.
+#
+#  VALID_ARCHITECTURES           = IA32 X64
+#
+
+[Sources]
+  BaseRtcLib.c
+
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+
+[LibraryClasses]
+  IoLib
+  UefiLib
+  BaseRtcLib
+  # TODO Timer event
+  
+[FeaturePcd]
+
+
+[Pcd]
+

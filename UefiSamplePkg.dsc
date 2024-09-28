@@ -114,6 +114,8 @@
   PracticeApp\ExShellCEntryLib\ExShellCEntryLib.inf
   PracticeApp\ExPciUtility\ExPciUtility.inf
   PracticeApp\ExRtc\ExRtc.inf
+  # TODO RtcHeartbeat
+  #PracticeApp\RtcHeartbeat\RtcHeartbeat.inf
 [Components.X64]
 
 
