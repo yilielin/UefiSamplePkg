@@ -1,2 +1,2 @@
 # uefi_sample
-Package to practice UEFI EDK2
+Package for UEFI exercise
